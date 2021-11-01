@@ -17,7 +17,7 @@ def user_details(user: schemas.User):
 
 
 #path parmeter with numeric validation
-@router.get('/user/validation/{userId}')
+@router.get('/user/validation/{userId}', tags = ['query params'])
 async def user_info(
     *, userId: int = Path(..., title="The ID of the user to get", ge=1, le=1000),
     q: str, grade: float = Query(..., gt=0, lt=10.5) 
@@ -39,7 +39,7 @@ async def item(item: schemas.Items):
 
 
 # query parameters with string validation
-@router.post('/query/{queryId}')
+@router.post('/query/{queryId}', tags = ['query params'])
 def queries(
     queryId: int, queryType: str, 
     priorityHigh: Optional[bool] = False, comment: Optional[str] = Query(..., min_length=3, max_lenght=20),

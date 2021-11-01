@@ -15,7 +15,7 @@ class Employee(Base):
         return "<Employee(name='%s', fullname='%s', nickname='%s')>" % (
                              self.name, self.fullname, self.nickname)
 
-    reLemployer = relationship("Employer", back_populates="reLemployee")
+    reLEmployer = relationship("Employer", back_populates="reLEmployee")
 
 
 class Employer(Base):
@@ -27,5 +27,5 @@ class Employer(Base):
     is_active = Column(Boolean, default=True)
     employee_id = Column(Integer, ForeignKey("Employee.id"))
     
-    reLemployee = relationship("Employee", back_populates="reLemployer")
+    reLEmployee = relationship("Employee", back_populates="reLEmployer")
 

@@ -1,18 +1,15 @@
-from typing import Optional, List
-from sqlalchemy.sql.expression import false
-from fastapi import FastAPI, Query, Path, Depends, status, Response, HTTPException
+from fastapi import FastAPI
 import uvicorn
-from subresources import schemas, functions
 from subresources.sql_app import sqlModel, database
-from subresources.routers import sql_router_employee, sql_router_employer, basic_router
+from subresources.routers import sqLRouterEmployee, sqLRouterEmployer, basicRouter
 
 app = FastAPI()
 
 sqlModel.Base.metadata.create_all(database.engine)
 
-app.include_router(sql_router_employee.router)
-app.include_router(sql_router_employer.router)
-app.include_router(basic_router.router)
+app.include_router(sqLRouterEmployee.router)
+app.include_router(sqLRouterEmployer.router)
+app.include_router(basicRouter.router)
 
 
 

@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter , Depends, HTTPException, status, Response
 from ..sql_app import database, sqlModel, sqlSchema
 from sqlalchemy.orm import Session
@@ -16,7 +17,7 @@ def sql_database_create_employee(employee: sqlSchema.Employee, db: Session = Dep
     return newEmployee
 
 
-@router.get('/sqlDatabase/employee/info', status_code = 200, tags = ['Employee'])
+@router.get('/sqlDatabase/employee/info',response_model = List[sqlSchema.Show_Employee], status_code = 200, tags = ['Employee'])
 def all(db: Session = Depends(get_db)):
     employies =  db.query(sqlModel.Employee).all()
     return employies
