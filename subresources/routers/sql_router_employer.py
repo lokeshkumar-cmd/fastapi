@@ -6,7 +6,7 @@ router = APIRouter()
 
 get_db = database.get_db 
 
-@router.post('/sqlDatabase/employer/create', status_code = status.HTTP_201_CREATED)
+@router.post('/sqlDatabase/employer/create', status_code = status.HTTP_201_CREATED, tags = ['Employer'])
 def sql_database_create_employee(employer: sqlSchema.Employer, db: Session = Depends(database.get_db)):
     newEmployer = sqlModel.Employee(name = employer.name, email = employer.email, is_active = employer.is_active)
     db.add(newEmployer)
@@ -15,13 +15,13 @@ def sql_database_create_employee(employer: sqlSchema.Employer, db: Session = Dep
     return newEmployer
 
 
-@router.get('/sqlDatabase/employer/info')
+@router.get('/sqlDatabase/employer/info', tags = ['Employer'])
 async def all(db: Session = Depends(database.get_db)):
     employers = db.query(sqlModel.Employer).all()
     return employers
 
 
-@router.get('/sqlDatabase/employer/singleinfo/{id}')
+@router.get('/sqlDatabase/employer/singleinfo/{id}', tags = ['Employer'])
 async def single_info_employer(id,response: Response, db: Session = Depends(database.get_db)):
     employer = db.query(sqlModel.Employer).filter(sqlModel.Employer.id == id).first()
     if not employer:
@@ -29,7 +29,7 @@ async def single_info_employer(id,response: Response, db: Session = Depends(data
     return employer
 
 
-@router.put('/sqlDatabase/employer/update/{id}', status_code = status.HTTP_202_ACCEPTED)
+@router.put('/sqlDatabase/employer/update/{id}', status_code = status.HTTP_202_ACCEPTED, tags = ['Employer'])
 def update(id, response: Response, employer: sqlSchema.Employee, db: Session = Depends(get_db)):
     employee = db.query(sqlModel.Employer).filter(sqlModel.Employer.id == id).update(employer, synchronize_session=False)
     if not employee:
@@ -39,7 +39,7 @@ def update(id, response: Response, employer: sqlSchema.Employee, db: Session = D
 
 
 
-@router.delete('/sqlDatabase/employer/delete/{id}', status_code = status.HTTP_204_NO_CONTENT)
+@router.delete('/sqlDatabase/employer/delete/{id}', status_code = status.HTTP_204_NO_CONTENT, tags = ['Employer'])
 def drop(id, db: Session = Depends(database.get_db)):
     db.query(sqlModel.Employer).filter(sqlModel.Employer.id == id).delete(synchronize_session=False)
     db.commit()
