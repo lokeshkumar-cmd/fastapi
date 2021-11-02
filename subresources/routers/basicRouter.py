@@ -2,7 +2,9 @@ from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, status, Response, Query, Path
 from .. import functions, schemas
 
-router = APIRouter()
+router = APIRouter(
+    tags = ['Basic']
+)
 
 # to get file path from url path parameters
 @router.get("/url1/{filePath:path}")
@@ -17,7 +19,7 @@ def user_details(user: schemas.User):
 
 
 #path parmeter with numeric validation
-@router.get('/user/validation/{userId}', tags = ['query params'])
+@router.get('/user/validation/{userId}', tags = ['path params'])
 async def user_info(
     *, userId: int = Path(..., title="The ID of the user to get", ge=1, le=1000),
     q: str, grade: float = Query(..., gt=0, lt=10.5) 
@@ -28,7 +30,7 @@ async def user_info(
 # dropdown menu
 @router.get('/modeloption/{models}')
 async def drop_down(models: schemas.MachineLearningModel):
-    message = await functions.model_info(models)
+    message = functions.model_info(models)
     return message
 
 

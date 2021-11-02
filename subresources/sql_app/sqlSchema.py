@@ -29,7 +29,7 @@ class ShowEmployer(BaseModel):
     name: str
     email: str
     is_active: bool
-    reLEmployee: Show_Employee
+    employee: Show_Employee
     
     
     

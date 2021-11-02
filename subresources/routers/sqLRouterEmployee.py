@@ -1,48 +1,43 @@
 from typing import List
 from fastapi import APIRouter , Depends, HTTPException, status, Response
-from ..sql_app import database, sqlModel, sqlSchema
 from sqlalchemy.orm import Session
+from ..sql_app import database, sqlModel, sqlSchema
+from .. operations.employee import create_employee, read_all_employee, read_employee, update_employee, delete_employee
 
-router = APIRouter()
+router = APIRouter(
+    prefix  = "/sqlDatabase/Employee",
+    tags = ['Employee']
+)
 
 get_db = database.get_db 
 
 
-@router.post('/sqlDatabase/employee/create', status_code = 201, tags = ['Employee'])
+@router.post('/create', status_code = 201)
 def sql_database_create_employee(employee: sqlSchema.Employee, db: Session = Depends(database.get_db)):
-    newEmployee = sqlModel.Employee(name = employee.name, email = employee.email, is_active = employee.is_active, hashed_password = employee.hashed_password)
-    db.add(newEmployee)
-    db.commit()
-    db.refresh(newEmployee)
-    return newEmployee
+    return create_employee(db, employee)
 
 
-@router.get('/sqlDatabase/employee/info',response_model = List[sqlSchema.Show_Employee], status_code = 200, tags = ['Employee'])
+@router.get('/info',response_model = List[sqlSchema.Show_Employee], status_code = 200)
 def all(db: Session = Depends(get_db)):
-    employies =  db.query(sqlModel.Employee).all()
-    return employies
+    return read_all_employee(db)
 
 
-@router.get('/sqlDatabase/employee/singleinfo/{id}', tags = ['Employee'])
+@router.get('/singleinfo/{id}', response_model = sqlSchema.Show_Employee, status_code = 200)
 async def single_info_employee(id,response: Response, db: Session = Depends(database.get_db)):
-    employee = db.query(sqlModel.Employee).filter(sqlModel.Employee.id == id).first()
+    employee = read_employee(db, id)
     if not employee:
-        response.status_code = status.HTTP_404_NOT_FOUND
-        return {'error': f'details not found for id {id}'}
+        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail ={'error': f'no details found for id {id}'})
     return employee
 
 
-@router.put('/sqlDatabase/employee/update/{id}', status_code = status.HTTP_202_ACCEPTED, tags = ['Employee'])
+@router.put('/update/{id}', status_code = status.HTTP_202_ACCEPTED)
 def update(id, response: Response, employee: sqlSchema.Employee, db: Session = Depends(get_db)):
-    employee = db.query(sqlModel.Employee).filter(sqlModel.Employee.id == id).update(employee, synchronize_session=False)
-    if not employee:
+    employeeUpdate = update_employee(db, employee, id)
+    if not employeeUpdate:
         raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail ={'error': f'no details found for id {id}'})
-    db.commit()
-    return 'Updated success'
+    return employeeUpdate
 
 
-@router.delete('/sqlDatabase/employee/delete/{id}', status_code = status.HTTP_204_NO_CONTENT, tags = ['Employee'])
+@router.delete('/delete/{id}', status_code = status.HTTP_204_NO_CONTENT)
 def drop(id, db: Session = Depends(database.get_db)):
-    db.query(sqlModel.Employee).filter(sqlModel.Employee.id == id).delete(synchronize_session=False)
-    db.commit()
-    return "Done"
+    return delete_employee(db, id)

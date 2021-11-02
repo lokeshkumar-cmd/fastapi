@@ -11,11 +11,12 @@ class Employee(Base):
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
 
-    def __repr__(self):
-        return "<Employee(name='%s', fullname='%s', nickname='%s')>" % (
-                             self.name, self.fullname, self.nickname)
+    # def __repr__(self):
+    #     return "<Employee(name='%s', fullname='%s', nickname='%s')>" % (
+    #                          self.name, self.fullname, self.surname)
+                             
 
-    reLEmployer = relationship("Employer", back_populates="reLEmployee")
+    employer = relationship("Employer", back_populates="employee")
 
 
 class Employer(Base):
@@ -27,5 +28,5 @@ class Employer(Base):
     is_active = Column(Boolean, default=True)
     employee_id = Column(Integer, ForeignKey("Employee.id"))
     
-    reLEmployee = relationship("Employee", back_populates="reLEmployer")
+    employee = relationship("Employee", back_populates="employer")
 
